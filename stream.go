@@ -292,9 +292,10 @@ func newClientStreamWithParams(ctx context.Context, desc *StreamDesc, cc *Client
 	}
 
 	host := cc.authority
-	if mc.Host != "" {
-		host = mc.Host
-		ctx = context.WithValue(ctx, transport.CtxValAllowHostOverride{}, true)
+	hostRewriteLiteral, _ := ctx.Value(transport.CtxKeyHostRewriteLiteral{}).(string)
+	if hostRewriteLiteral != "" {
+		host = hostRewriteLiteral
+		ctx = context.WithValue(ctx, transport.CtxKeyVallowHostOverride{}, true)
 	}
 
 	callHdr := &transport.CallHdr{

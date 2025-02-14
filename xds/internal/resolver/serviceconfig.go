@@ -33,6 +33,7 @@ import (
 	"google.golang.org/grpc/internal/grpcutil"
 	iresolver "google.golang.org/grpc/internal/resolver"
 	"google.golang.org/grpc/internal/serviceconfig"
+	"google.golang.org/grpc/internal/transport"
 	"google.golang.org/grpc/internal/wrr"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -174,6 +175,7 @@ func (cs *configSelector) SelectConfig(rpcInfo iresolver.RPCInfo) (*iresolver.RP
 
 	lbCtx := clustermanager.SetPickedCluster(rpcInfo.Context, cluster.name)
 	lbCtx = ringhash.SetRequestHash(lbCtx, cs.generateHash(rpcInfo, rt.hashPolicies))
+	lbCtx = context.WithValue(lbCtx, transport.CtxKeyHostRewriteLiteral{}, rt.hostRewriteLiteral)
 
 	config := &iresolver.RPCConfig{
 		// Communicate to the LB policy the chosen cluster and request hash, if Ring Hash LB policy.
@@ -200,8 +202,6 @@ func (cs *configSelector) SelectConfig(rpcInfo iresolver.RPCInfo) (*iresolver.RP
 	} else if cs.virtualHost.retryConfig != nil {
 		config.MethodConfig.RetryPolicy = retryConfigToPolicy(cs.virtualHost.retryConfig)
 	}
-
-	config.MethodConfig.Host = rt.hostRewriteLiteral
 
 	return config, nil
 }
