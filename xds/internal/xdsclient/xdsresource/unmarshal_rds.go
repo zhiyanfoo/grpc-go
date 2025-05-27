@@ -310,6 +310,8 @@ func routesProtoToSlice(routes []*v3routepb.Route, csps map[string]clusterspecif
 			}
 			route.HashPolicies = hp
 
+			route.HostRewriteLiteral = action.GetHostRewriteLiteral()
+
 			switch a := action.GetClusterSpecifier().(type) {
 			case *v3routepb.RouteAction_Cluster:
 				route.WeightedClusters[a.Cluster] = WeightedCluster{Weight: 1}

@@ -741,12 +741,18 @@ func (e NewStreamError) Error() string {
 func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (*ClientStream, error) {
 	ctx = peer.NewContext(ctx, t.getPeer())
 
-	// ServerName field of the resolver returned address takes precedence over
-	// Host field of CallHdr to determine the :authority header. This is because,
-	// the ServerName field takes precedence for server authentication during
-	// TLS handshake, and the :authority header should match the value used
-	// for server authentication.
-	if t.address.ServerName != "" {
+	if IsHostRewriteLiteralNonEmpty(ctx) {
+		// HostRewriteHeader takes precedence over Host field and ServerName, as its entire
+		// purpose is to allow users to override the HostHeader.
+		newCallHdr := *callHdr
+		newCallHdr.Host = HostRewriteLiteral(ctx)
+		callHdr = &newCallHdr
+	} else if t.address.ServerName != "" {
+		// ServerName field of the resolver returned address takes precedence over
+		// Host field of CallHdr to determine the :authority header. This is because,
+		// the ServerName field takes precedence for server authentication during
+		// TLS handshake, and the :authority header should match the value used
+		// for server authentication.
 		newCallHdr := *callHdr
 		newCallHdr.Host = t.address.ServerName
 		callHdr = &newCallHdr
