@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/internal/envconfig"
 	"google.golang.org/grpc/internal/xds/matcher"
 	"google.golang.org/grpc/xds/internal/clusterspecifier"
 	"google.golang.org/protobuf/proto"
@@ -310,7 +311,9 @@ func routesProtoToSlice(routes []*v3routepb.Route, csps map[string]clusterspecif
 			}
 			route.HashPolicies = hp
 
-			route.HostRewriteLiteral = action.GetHostRewriteLiteral()
+			if envconfig.XDSExperimentalAuthoriyLiteralRewrite {
+				route.HostRewriteLiteral = action.GetHostRewriteLiteral()
+			}
 
 			switch a := action.GetClusterSpecifier().(type) {
 			case *v3routepb.RouteAction_Cluster:

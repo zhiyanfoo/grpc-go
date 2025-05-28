@@ -26,6 +26,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/internal/envconfig"
 	"google.golang.org/grpc/internal/stubserver"
 	"google.golang.org/grpc/internal/testutils"
 	"google.golang.org/grpc/internal/testutils/xds/e2e"
@@ -44,6 +45,12 @@ import (
 // the host rewrite literal value configured, that the authority pseudo-header in the rpc call
 // makes has it set
 func (s) TestHostRewriteLiteral(t *testing.T) {
+	originalEnvVarValue := envconfig.XDSExperimentalAuthoriyLiteralRewrite
+	defer func() {
+		envconfig.XDSExperimentalAuthoriyLiteralRewrite = originalEnvVarValue
+	}()
+	envconfig.XDSExperimentalAuthoriyLiteralRewrite = true
+
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 	defer cancel()
 

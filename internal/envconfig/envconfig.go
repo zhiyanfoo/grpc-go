@@ -73,6 +73,11 @@ var (
 	// ALTSHandshakerKeepaliveParams is set if we should add the
 	// KeepaliveParams when dial the ALTS handshaker service.
 	ALTSHandshakerKeepaliveParams = boolFromEnv("GRPC_EXPERIMENTAL_ALTS_HANDSHAKER_KEEPALIVE_PARAMS", false)
+
+	// XDSExperimentalAuthoriyLiteralRewrite is set if we should respect the host_rewrite_literal RDS config.
+	// If we respect it, then the value of the field `host_rewrite_literal` is used to override the authority
+	// field on RPC calls.
+	XDSExperimentalAuthoriyLiteralRewrite = boolFromEnv("GRPC_XDS_EXPERIMENTAL_AUTHORIY_LITERAL_REWRITE", false)
 )
 
 func boolFromEnv(envVar string, def bool) bool {
