@@ -34,6 +34,7 @@ import (
 	iresolver "google.golang.org/grpc/internal/resolver"
 	iringhash "google.golang.org/grpc/internal/ringhash"
 	"google.golang.org/grpc/internal/serviceconfig"
+	"google.golang.org/grpc/internal/transport"
 	"google.golang.org/grpc/internal/wrr"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -119,6 +120,8 @@ type route struct {
 	httpFilterConfigOverride map[string]httpfilter.FilterConfig
 	retryConfig              *xdsresource.RetryConfig
 	hashPolicies             []*xdsresource.HashPolicy
+
+	hostRewriteLiteral string
 }
 
 func (r route) String() string {
@@ -204,6 +207,7 @@ func (cs *configSelector) SelectConfig(rpcInfo iresolver.RPCInfo) (*iresolver.RP
 
 	lbCtx := clustermanager.SetPickedCluster(rpcInfo.Context, cluster.name)
 	lbCtx = iringhash.SetXDSRequestHash(lbCtx, cs.generateHash(rpcInfo, rt.hashPolicies))
+	lbCtx = transport.SetHostRewriteLiteral(lbCtx, rt.hostRewriteLiteral)
 
 	config := &iresolver.RPCConfig{
 		// Communicate to the LB policy the chosen cluster and request hash, if Ring Hash LB policy.

@@ -376,6 +376,7 @@ func (r *xdsResolver) newConfigSelector() *configSelector {
 		cs.routes[i].httpFilterConfigOverride = rt.HTTPFilterConfigOverride
 		cs.routes[i].retryConfig = rt.RetryConfig
 		cs.routes[i].hashPolicies = rt.HashPolicies
+		cs.routes[i].hostRewriteLiteral = rt.HostRewriteLiteral
 	}
 
 	// Account for this config selector's clusters.  Do this after no further

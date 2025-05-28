@@ -150,6 +150,11 @@ type Route struct {
 	// ClusterSpecifierPlugin is the name of the Cluster Specifier Plugin that
 	// this Route is linked to, if specified by xDS.
 	ClusterSpecifierPlugin string
+
+	// HostRewriteLiteral contains the Host override that is set by the Route Action
+	// host_rewrite_header
+	// https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/route/v3/route_components.proto#config-route-v3-routeaction
+	HostRewriteLiteral string
 }
 
 // WeightedCluster contains settings for an xds ActionType.WeightedCluster.
